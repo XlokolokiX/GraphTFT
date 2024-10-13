@@ -39,6 +39,17 @@ void Graph_TFT::drawAxis(void)
     tft->drawLine(startX, startY, endX, startY, canva_style.draw1);
 }
 
+void Graph_TFT::setDataLINES(uint16_t* x_data, uint16_t* y_data, uint8_t n_data, uint16_t y_limit)
+{
+    drawLINES(x_data, y_data, n_data, y_limit);
+}
+
+void Graph_TFT::setDataLINES(uint16_t* x_data, uint16_t* y_data, uint8_t n_data)
+{
+    uint16_t y_limit = maxValue(y_data, n_data);
+    drawLINES(x_data, y_data, n_data, y_limit);
+}
+
 void Graph_TFT::drawBARS(uint16_t *y_data, uint8_t n_data, uint16_t y_limit)
 {
     drawBackground();
@@ -199,6 +210,63 @@ void Graph_TFT::setDataPIE(uint8_t *percentage, uint8_t n_data)
 void Graph_TFT::setDataPIE(uint8_t *percentage, uint8_t n_data, const char *labels[])
 {
     drawPIE(percentage, n_data, labels);
+}
+
+void Graph_TFT::drawLINES(uint16_t* x_data, uint16_t* y_data, uint8_t n_data, uint16_t y_limit)
+{
+    drawBackground();
+    drawTitle();
+
+    float deltaX_px = (graphW - (n_data + 1)) / n_data;
+    float deltaY_px = graphH / y_limit;
+
+    uint16_t x_data_sorted[n_data], y_data_sorted[n_data];
+    memcpy(x_data_sorted, x_data, n_data * sizeof(uint16_t));
+    memcpy(y_data_sorted, y_data, n_data * sizeof(uint16_t));
+    bubbleSortX(x_data_sorted, y_data_sorted, n_data);
+
+    uint16_t xs = startX + deltaX_px*x_data_sorted[0] + 2;
+    uint16_t ys = startY - deltaY_px*y_data_sorted[0];
+    uint16_t xe = 0;
+    uint16_t ye = 0;
+    for(uint8_t i = 1; i < n_data; i++)
+    {   
+        if(canva_style.fill)
+        {
+            tft->fillCircle(xs, ys, 2, canva_style.draw);
+        }else
+        {
+            tft->drawCircle(xs, ys, 2, canva_style.draw);
+        }
+        if(i != n_data)
+        {   
+            xe = startX + deltaX_px*x_data_sorted[i] + 2;
+            ye = startY - deltaY_px*y_data_sorted[i];
+            tft->drawLine(xs, ys, xe, ye, canva_style.draw);
+        }
+        xs = xe;
+        ys = ye;
+    }
+
+    if (canva_style.x_axis)
+    {
+        uint8_t x = 0;
+        for (uint8_t i = 0; i < n_data / canva_style.axisDivX; i++)
+        {
+            tft->drawNumber(canva_style.axisDivX * i + 1, 2 + startX + x, startY + 2);
+            x += (deltaX_px + 1) * canva_style.axisDivX;
+        }
+    }
+
+    if (canva_style.y_axis)
+    {
+        for (uint8_t i = 0; i <= y_limit; i += canva_style.axisDivY)
+        {
+            tft->drawNumber(i, canva_style.x + 2, startY - i * deltaY_px - 2);
+            tft->drawPixel(startX + 1, startY - i * deltaY_px, canva_style.draw1);
+        }
+    }
+
 }
 
 void Graph_TFT::setTitle(char *str)
@@ -362,4 +430,22 @@ uint16_t Graph_TFT::maxminValue(uint16_t *y_data, uint8_t n_data, bool max)
         }
     }
     return val;
+}
+
+void Graph_TFT::bubbleSortX(uint16_t *arrX, uint16_t *arrY, uint8_t n_data)
+{  
+    for(uint8_t i = 0; i < n_data; i++)
+    {
+        for(uint8_t j = i + 1; j < n_data; j++)
+        {
+            if(arrX[i] > arrX[j])
+            {
+                uint16_t tempX = arrX[i], tempY = arrY[i];
+                arrX[i] = arrX[j];
+                arrX[j] = tempX;
+                arrY[i] = arrY[j];
+                arrY[j] = tempY;
+            }
+        }
+    }
 }
