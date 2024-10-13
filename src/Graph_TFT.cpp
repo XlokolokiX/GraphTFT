@@ -23,31 +23,7 @@ Graph_TFT::Graph_TFT(TFT_eSPI *display, CANVA_STYLE canva_style, GRAPH_TYPE type
 
 void Graph_TFT::setCanva(GRAPH_STYLE style)
 {
-    switch (style)
-    {
-    case BLACK:
-        canva_style.background = COLOR_BLACK;
-        canva_style.draw = COLOR_WHITE;
-        canva_style.fill = false;
-        break;
-    case PAPER:
-        canva_style.background = COLOR_PAPER;
-        canva_style.draw = BLUE_INK;
-        canva_style.fill = false;
-        break;
-    case CAKE:
-        canva_style.background = CAKE_PINK;
-        canva_style.draw = BLUE_INK;
-        canva_style.fill = true;
-        break;
-    default:
-        canva_style.background = COLOR_BLACK;
-        canva_style.draw = COLOR_WHITE;
-        canva_style.fill = false;
-        break;
-    }
-    tft->setTextSize(TEXT_SIZE);
-    tft->setTextColor(canva_style.draw, canva_style.background, false);
+    setStyle(style);
 
     endX = canva_style.x + canva_style.canvasWidth - canva_style.padding;
     endY = canva_style.y + canva_style.padding;
@@ -109,16 +85,16 @@ void Graph_TFT::drawBARS(uint16_t *y_data, uint8_t n_data, uint16_t y_limit)
     if (canva_style.x_axis)
     {
         x = 0;
-        for (uint8_t i = 0; i < n_data / canva_style.axisDiv; i++)
+        for (uint8_t i = 0; i < n_data / canva_style.axisDivX; i++)
         {
-            tft->drawNumber(canva_style.axisDiv * i + 1, 2 + startX + x, startY + 2);
-            x += (deltaX_px + 1) * canva_style.axisDiv;
+            tft->drawNumber(canva_style.axisDivX * i + 1, 2 + startX + x, startY + 2);
+            x += (deltaX_px + 1) * canva_style.axisDivX;
         }
     }
 
     if (canva_style.y_axis)
     {
-        for (uint8_t i = 0; i <= y_limit; i += canva_style.axisDiv)
+        for (uint8_t i = 0; i <= y_limit; i += canva_style.axisDivY)
         {
             tft->drawNumber(i, canva_style.x + 2, startY - i * deltaY_px - 2);
             tft->drawPixel(startX + 1, startY - i * deltaY_px, canva_style.draw);
@@ -147,9 +123,10 @@ uint16_t Graph_TFT::maxValue(uint16_t *y_data, uint8_t n_data)
     return max;
 }
 
-void Graph_TFT::setAxisDiv(uint8_t div)
+void Graph_TFT::setAxisDiv(uint8_t divX, uint8_t divY)
 {
-    this->canva_style.axisDiv = div;
+    this->canva_style.axisDivX = divX;
+    this->canva_style.axisDivY = divY;
 }
 
 void Graph_TFT::setBackgroudColour(uint16_t RGB565)
@@ -176,4 +153,33 @@ void Graph_TFT::setAxis(bool x_axis, bool y_axis)
 {
     this->canva_style.x_axis = x_axis;
     this->canva_style.y_axis = y_axis;
+}
+
+void Graph_TFT::setStyle(GRAPH_STYLE style)
+{
+    switch (style)
+    {
+    case BLACK:
+        canva_style.background = COLOR_BLACK;
+        canva_style.draw = COLOR_WHITE;
+        canva_style.fill = false;
+        break;
+    case PAPER:
+        canva_style.background = COLOR_PAPER;
+        canva_style.draw = BLUE_INK;
+        canva_style.fill = false;
+        break;
+    case CAKE:
+        canva_style.background = CAKE_PINK;
+        canva_style.draw = BLUE_INK;
+        canva_style.fill = true;
+        break;
+    default:
+        canva_style.background = COLOR_BLACK;
+        canva_style.draw = COLOR_WHITE;
+        canva_style.fill = false;
+        break;
+    }
+    tft->setTextSize(TEXT_SIZE);
+    tft->setTextColor(canva_style.draw, canva_style.background, false);
 }

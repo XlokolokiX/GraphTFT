@@ -7,9 +7,9 @@
 
 TFT_eSPI tft = TFT_eSPI();
 
-#define N 6
+#define N 53
 uint16_t y[N];
-Graph_TFT canva = Graph_TFT(&tft, 1, 1, 124, 125, 20, 10, BARS, BLACK);
+Graph_TFT canva = Graph_TFT(&tft, 0, 0, 128, 128, 10, 5, BARS, CAKE);
 
 void setup() 
 {
@@ -23,12 +23,12 @@ void setup()
   tft.setTextSize(1);
 
   canva.setTitle("    HOLA");
-  canva.setAxisDiv(2);
+  canva.setAxisDiv(10,5);
 }
 
 void loop() 
 {
-  delay(500);
+  delay(1000);
   for(int i = 0; i<N ; i++){
     y[i] = rand() % 10;
   }

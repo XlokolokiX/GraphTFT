@@ -36,7 +36,8 @@ struct CANVA_STYLE
     uint16_t draw;            ///< Drawing color of graph elements (RGB565 format).
     uint8_t padding;          ///< Padding around the canvas area.
     uint8_t rounded;          ///< Rounded corners for the canvas (0 for square, > 0 for rounded corners).
-    uint8_t axisDiv = 1;      ///< Number of divisions for the axis (default is 1).
+    uint8_t axisDivX = 1;     ///< Number of divisions for the Xaxis (default is 1).
+    uint8_t axisDivY = 1;     ///< Number of divisions for the Yaxis (default is 1).
     bool x_axis = 1;          ///< Whether to draw the x-axis (1 to enable, 0 to disable).
     bool y_axis = 1;          ///< Whether to draw the y-axis (1 to enable, 0 to disable).
     bool fill;                ///< Whether to fill the graph bars or elements.
@@ -157,9 +158,10 @@ public:
 
     /**
      * @brief Set the number of axis divisions for labels.
-     * @param div Number of divisions for the X-Y axis.
+     * @param divX Number of divisions for the X axis.
+     * @param divY Number of divisions for the Y axis.
      */
-    void setAxisDiv(uint8_t div);
+    void setAxisDiv(uint8_t divX, uint8_t divY);
 
     /**
      * @brief Set the style of the graph.
