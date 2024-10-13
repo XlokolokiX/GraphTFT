@@ -7,9 +7,11 @@
 
 TFT_eSPI tft = TFT_eSPI();
 
-#define N 53
+#define N 20
+uint16_t x[N];
 uint16_t y[N];
-Graph_TFT canva = Graph_TFT(&tft, 0, 0, 128, 128, 10, 5, BARS, CAKE);
+
+Graph_TFT canva = Graph_TFT(&tft, 4, 4, 124, 90, 15, 5, BARS, BLACK);
 
 void setup() 
 {
@@ -22,8 +24,12 @@ void setup()
   tft.setSwapBytes(true);
   tft.setTextSize(1);
 
-  canva.setTitle("    HOLA");
-  canva.setAxisDiv(10,5);
+  canva.setTitle(" *C vs [t]");
+  canva.setAxisDiv(3,3);
+
+  for(int i = 0; i<N; i++){
+    x[i] = i;
+  }
 }
 
 void loop() 
@@ -32,5 +38,5 @@ void loop()
   for(int i = 0; i<N ; i++){
     y[i] = rand() % 10;
   }
-  canva.setDataBARS(y, N, 15);
+  canva.setDataLINES(x, y, N, 10);
 }

@@ -109,12 +109,29 @@ private:
     void drawBARS(uint16_t* y_data, uint8_t n_data, uint16_t y_limit);
 
     /**
+     * @brief Draw a bar graph with the provided data.
+     * @param x_data Array containing y-axis data for the bars.
+     * @param y_data Array containing y-axis data for the bars.
+     * @param n_data Number of data points.
+     * @param y_limit Maximum value for y-axis scaling.
+     */
+    void drawLINES(uint16_t* x_data, uint16_t* y_data, uint8_t n_data, uint16_t y_limit);
+
+    /**
      * @brief Find the maximum value in the y-axis data.
      * @param y_data Array of y-axis data points.
      * @param n_data Number of data points.
      * @return Maximum value in the data array.
      */
     uint16_t maxValue(uint16_t *y_data, uint8_t n_data);
+
+    /**
+     * @brief Performs a ascending bubble sort over a array;
+     * @param arrX Array of data X.
+     * @param arrY Array of data Y.
+     * @param n_data Number of data points.
+     */
+    void bubbleSortX(uint16_t *arrX, uint16_t *arrY, uint8_t n_data);
 
 public:
 
@@ -155,6 +172,23 @@ public:
      * @param n_data Number of data points.
      */
     void setDataBARS(uint16_t* y_data, uint8_t n_data);
+
+    /**
+     * @brief Set the data and limits for lines graph.
+     * @param x_data Array of x-axis data points.
+     * @param y_data Array of y-axis data points.
+     * @param n_data Number of data points.
+     * @param y_limit Maximum value for y-axis scaling.
+     */
+    void setDataLINES(uint16_t* x_data, uint16_t* y_data, uint8_t n_data, uint16_t y_limit);
+
+    /**
+     * @brief Set the data for lines graph, y-axis scaling with y-max.
+     * @param x_data Array of x-axis data points.
+     * @param y_data Array of y-axis data points.
+     * @param n_data Number of data points.
+     */
+    void setDataLINES(uint16_t* x_data, uint16_t* y_data, uint8_t n_data);
 
     /**
      * @brief Set the number of axis divisions for labels.
