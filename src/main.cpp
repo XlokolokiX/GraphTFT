@@ -7,11 +7,11 @@
 
 TFT_eSPI tft = TFT_eSPI();
 
-#define N 20
+#define N 10
 uint16_t x[N];
 uint16_t y[N];
 
-Graph_TFT canva = Graph_TFT(&tft, 4, 4, 124, 90, 15, 5, BARS, BLACK);
+Graph_TFT canva = Graph_TFT(&tft, 4, 4, 124, 90, 15, 5, OCEAN);
 
 void setup() 
 {
