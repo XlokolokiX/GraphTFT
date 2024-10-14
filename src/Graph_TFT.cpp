@@ -143,9 +143,62 @@ void Graph_TFT::drawLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, ui
     }
 }
 
-void Graph_TFT::setDataPIE(uint16_t *percentage, uint8_t n_data)
+void Graph_TFT::drawPIE(uint8_t *percentage, uint8_t n_data, const char *labels[])
 {
-    
+    drawBackground();
+    drawTitle();
+
+    const uint16_t colors[5] = {0x08aa, 0x1ad5, 0xa236, 0xf334, 0xfd36};
+    const double conversion = 62.832e-3;
+    uint8_t radius, start = 0, end = 0;
+    uint16_t sx = startX + graphW / 2;
+    uint16_t sy = startY - graphH / 2;
+    uint16_t ex, ey, lx, ly, midpoint;
+
+    if (graphH < graphW)
+    {
+        radius = graphH / 2;
+    }
+    else
+    {
+        radius = graphW / 2;
+    }
+
+    for (uint8_t i = 0; i < n_data; i++)
+    {
+        end = start + percentage[i];
+
+        for (uint8_t p = start; p < end; p += 1)
+        {
+            ex = sx + radius * sin(p * conversion);
+            ey = sy - radius * cos(p * conversion);
+
+            tft->fillTriangle(sx, sy, sx + radius * sin((p + 1) * conversion), sy - radius * cos((p + 1) * conversion), ex, ey, colors[i%5]);
+        }
+
+        midpoint = (start + end) / 2;
+
+        lx = sx + 1.1 * radius * sin(midpoint * conversion);
+        ly = sy - 1.1 * radius * cos(midpoint * conversion);
+
+        tft->drawNumber(percentage[i], lx, ly);
+        if (labels != NULL)
+        {
+            tft->drawString(labels[i], lx - 8, ly - 8);
+        }
+
+        start = end;
+    }
+}
+
+void Graph_TFT::setDataPIE(uint8_t *percentage, uint8_t n_data)
+{
+    drawPIE(percentage, n_data, NULL);
+}
+
+void Graph_TFT::setDataPIE(uint8_t *percentage, uint8_t n_data, const char *labels[])
+{
+    drawPIE(percentage, n_data, labels);
 }
 
 void Graph_TFT::setTitle(char *str)

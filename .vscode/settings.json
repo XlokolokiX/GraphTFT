@@ -291,6 +291,8 @@
     "limits": "cpp",
     "type_traits": "cpp",
     "random": "cpp",
-    "cstdlib": "cpp"
+    "cstdlib": "cpp",
+    "cmath": "cpp",
+    "*.tcc": "cpp"
   }
 }
