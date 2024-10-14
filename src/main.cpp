@@ -38,9 +38,9 @@ void setup()
 
 void loop() 
 {
-  delay(1000);
-  for(int i = 0; i<N ; i++){
-    y[i] = rand() % 10;
-  }
-  canva.setDataLINES(x, y, N, 10);
+  // delay(1000);
+  // for(int i = 0; i<N ; i++){
+  //   y[i] = rand() % 10;
+  // }
+  // canva.setDataLINES(x, y, N, 10);
 }

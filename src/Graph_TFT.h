@@ -136,6 +136,31 @@ private:
     void drawLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, uint16_t y_limit);
 
     /**
+     * @brief Draw a PIE graph with the percentage.
+     * @param percentage Array containing percentage data.
+     * @param n_data Number of data points.
+     * @param labels array of labels.
+     */
+    void drawPIE(uint8_t *percentage, uint8_t n_data, const char *labels[]);
+
+    /**
+     * @brief Draw a bar graph with the provided data.
+     * @param x_data Array containing y-axis data for the bars.
+     * @param y_data Array containing y-axis data for the bars.
+     * @param n_data Number of data points.
+     * @param y_limit Maximum value for y-axis scaling.
+     */
+    void drawLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, uint16_t y_limit);
+
+    /**
+     * @brief Draw a PIE graph with the percentage.
+     * @param percentage Array containing percentage data.
+     * @param n_data Number of data points.
+     * @param labels array of labels.
+     */
+    void drawPIE(uint8_t *percentage, uint8_t n_data, const char *labels[]);
+
+    /**
      * @brief Find the maximum value in the y-axis data.
      * @param y_data Array of y-axis data points.
      * @param n_data Number of data points.
@@ -253,7 +278,47 @@ public:
      * @param percentage [0-100] value of every data
      * @param n_data Number of data.
      */
-    void setDataPIE(uint16_t *percentage, uint8_t n_data);
+    void setDataPIE(uint8_t *percentage, uint8_t n_data);
+
+    /**
+     * @brief Set the data for PIE graph
+     * @param percentage [0-100] value of every data
+     * @param n_data Number of data.
+     * @param labels Labels for each data.
+     */
+    void setDataPIE(uint8_t *percentage, uint8_t n_data, const char *labels[]);
+
+    /**
+     * @brief Set the data and limits for lines graph.
+     * @param x_data Array of x-axis data points.
+     * @param y_data Array of y-axis data points.
+     * @param n_data Number of data points.
+     * @param y_limit Maximum value for y-axis scaling.
+     */
+    void setDataLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, uint16_t y_limit);
+
+    /**
+     * @brief Set the data for lines graph, y-axis scaling with y-max.
+     * @param x_data Array of x-axis data points.
+     * @param y_data Array of y-axis data points.
+     * @param n_data Number of data points.
+     */
+    void setDataLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data);
+
+    /**
+     * @brief Set the data for PIE graph
+     * @param percentage [0-100] value of every data
+     * @param n_data Number of data.
+     */
+    void setDataPIE(uint8_t *percentage, uint8_t n_data);
+
+    /**
+     * @brief Set the data for PIE graph
+     * @param percentage [0-100] value of every data
+     * @param n_data Number of data.
+     * @param labels Labels for each data.
+     */
+    void setDataPIE(uint8_t *percentage, uint8_t n_data, const char *labels[]);
 
     /**
      * @brief Set the number of axis divisions for labels.
