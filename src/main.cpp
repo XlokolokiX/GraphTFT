@@ -11,7 +11,7 @@ TFT_eSPI tft = TFT_eSPI();
 uint16_t x[N];
 uint16_t y[N];
 
-Graph_TFT canva = Graph_TFT(&tft, 4, 4, 124, 100, 15, 5, NEON);
+Graph_TFT canva = Graph_TFT(&tft, 4, 4, 124, 100, 15, 5, OCEAN);
 
 void setup() 
 {
