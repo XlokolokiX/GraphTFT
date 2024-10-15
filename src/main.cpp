@@ -7,7 +7,7 @@
 
 TFT_eSPI tft = TFT_eSPI();
 
-#define N 10
+#define N 5
 uint16_t x[N];
 uint16_t y[N];
 
@@ -25,10 +25,10 @@ void setup()
   tft.setTextSize(1);
 
   canva.setTitle("Pie");
-  canva.setAxisDiv(3,3);
+  canva.setAxisDiv(1,1);
 
   for(int i = 0; i<N; i++){
-    x[i] = i;
+     x[i] = i + 1;
   }
 
   //uint8_t percentage[5] = {12,28,10,10,40};
@@ -38,9 +38,10 @@ void setup()
 
 void loop() 
 {
-  delay(1000);
   for(int i = 0; i<N ; i++){
-    y[i] = rand() % 10;
+    y[i] = 1 + rand() % 8;
   }
-  canva.setDataLINES(x, y, N, 10);
+
+  canva.setDataBARS( y, N);
+  delay(1000);
 }

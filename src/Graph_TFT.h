@@ -105,18 +105,31 @@ private:
      * @brief Draw a bar graph with the provided data.
      * @param y_data Array containing y-axis data for the bars.
      * @param n_data Number of data points.
-     * @param y_limit Maximum value for y-axis scaling.
+     * @param min_Y Minimun value for y-axis scaling.
+     * @param max_Y Maximum value for y-axis scaling.
      */
-    void drawBARS(uint16_t *y_data, uint8_t n_data, uint16_t y_limit);
+    void drawBARS(uint16_t *y_data, uint8_t n_data, uint16_t min_Y, uint16_t max_Y);
+
+    /**
+     * @brief Draw labels of the graph.
+     * @param deltaX_px space of x axis in px.
+     * @param deltaY_px space of y axis in px.
+     * @param min_Y Minimun value for y-axis.
+     * @param max_Y Maximum value for y-axis.
+     * @param min_X Minimun value for x-axis.
+     * @param max_X Maximum value for x-axis.
+     */
+    void drawLabels(uint16_t deltaX_px, uint16_t deltaY_px, uint16_t min_Y, uint16_t max_Y, uint16_t min_X, uint16_t max_X);
 
     /**
      * @brief Draw a bar graph with the provided data.
      * @param x_data Array containing y-axis data for the bars.
      * @param y_data Array containing y-axis data for the bars.
      * @param n_data Number of data points.
-     * @param y_limit Maximum value for y-axis scaling.
+     * @param min_Y Minimun value for y-axis scaling.
+     * @param max_Y Maximum value for y-axis scaling.
      */
-    void drawLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, uint16_t y_limit);
+    void drawLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, uint16_t min_Y, uint16_t max_Y);
 
     /**
      * @brief Draw a PIE graph with the percentage.
@@ -171,12 +184,21 @@ public:
      * @brief Set the data and limits for bar graphs.
      * @param y_data Array of y-axis data points.
      * @param n_data Number of data points.
-     * @param y_limit Maximum value for y-axis scaling.
+     * @param min_Y Minimun value for y-axis scaling.
+     * @param max_Y Maximum value for y-axis scaling.
      */
-    void setDataBARS(uint16_t *y_data, uint8_t n_data, uint16_t y_limit);
+    void setDataBARS(uint16_t *y_data, uint8_t n_data, uint16_t min_Y, uint16_t max_Y);
 
     /**
-     * @brief Set the data for bar graphs, y-axis scaling with y-max.
+     * @brief Set the data for bar graphs, y-axis scaling max with y-max.
+     * @param y_data Array of y-axis data points.
+     * @param n_data Number of data points.
+     * @param min_Y Minimun value for y-axis scaling.
+     */
+    void setDataBARS(uint16_t *y_data, uint8_t n_data, uint16_t min_Y);
+
+    /**
+     * @brief Set the data for bar graphs, y-axis scaling with y-max - y-min.
      * @param y_data Array of y-axis data points.
      * @param n_data Number of data points.
      */
@@ -187,12 +209,22 @@ public:
      * @param x_data Array of x-axis data points.
      * @param y_data Array of y-axis data points.
      * @param n_data Number of data points.
-     * @param y_limit Maximum value for y-axis scaling.
+     * @param min_Y Minimun value for y-axis scaling.
+     * @param max_Y Maximum value for y-axis scaling.
      */
-    void setDataLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, uint16_t y_limit);
+    void setDataLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, uint16_t min_Y, uint16_t max_Y);
 
     /**
-     * @brief Set the data for lines graph, y-axis scaling with y-max.
+     * @brief Set the data and limits for lines graph, y-axis scaling max with y-max.
+     * @param x_data Array of x-axis data points.
+     * @param y_data Array of y-axis data points.
+     * @param n_data Number of data points.
+     * @param min_Y Maximum value for y-axis scaling.
+     */
+    void setDataLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, uint16_t min_Y);
+
+    /**
+     * @brief Set the data for lines graph, y-axis scaling with y-max y y-min.
      * @param x_data Array of x-axis data points.
      * @param y_data Array of y-axis data points.
      * @param n_data Number of data points.
