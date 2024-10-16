@@ -158,12 +158,44 @@ private:
     uint16_t maxminValue(uint16_t *y_data, uint8_t n_data, bool max);
 
     /**
-     * @brief Ascending bubble sort over a array, if arrY is not NULL, permorms permutations in both.
-     * @param arrX Array of data X.
-     * @param arrY Array of data Y.
-     * @param n_data Number of data points.
+     * @brief Ordena el arreglo `arrX` y, si está presente, el arreglo `arrY` usando el algoritmo Quicksort.
+     * 
+     * Esta función ordena los elementos del arreglo `arrX` en orden ascendente. Si se pasa `arrY`, 
+     * los elementos correspondientes en `arrY` también se intercambian para mantener la relación 
+     * entre ambos arreglos.
+     * 
+     * @param arrX Puntero al arreglo `arrX` que se va a ordenar.
+     * @param arrY Puntero al arreglo `arrY` que será intercambiado junto con `arrX` (puede ser NULL si no es necesario).
+     * @param left Índice de la posición izquierda del arreglo.
+     * @param right Índice de la posición derecha del arreglo.
      */
-    void bubbleSortX(uint16_t *arrX, uint16_t *arrY, uint8_t n_data);
+    void quickSortX(uint16_t *arrX, uint16_t *arrY, uint8_t left, uint8_t right);
+
+    /**
+     * @brief Particiona el arreglo `arrX` y, si está presente, también el arreglo `arrY` alrededor de un pivote.
+     * 
+     * La función selecciona un pivote y reorganiza los elementos de `arrX` de modo que todos los 
+     * elementos menores que el pivote estén a la izquierda y los mayores a la derecha. Si se proporciona 
+     * `arrY`, sus elementos se reorganizan de manera correspondiente.
+     * 
+     * @param arrX Puntero al arreglo `arrX` que se va a particionar.
+     * @param arrY Puntero al arreglo `arrY` que será intercambiado junto con `arrX` (puede ser NULL si no es necesario).
+     * @param left Índice de la posición izquierda del arreglo.
+     * @param right Índice de la posición derecha del arreglo.
+     * @return El índice final del pivote.
+     */
+    uint8_t partition(uint16_t *arrX, uint16_t *arrY, uint8_t left, uint8_t right);
+
+    /**
+     * @brief Intercambia los valores de dos variables.
+     * 
+     * Esta función intercambia los valores almacenados en dos punteros.
+     * 
+     * @param a Puntero a la primera variable.
+     * @param b Puntero a la segunda variable.
+     */
+    void swap(uint16_t *a, uint16_t *b);
+
 
 public:
     /**

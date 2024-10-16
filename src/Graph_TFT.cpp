@@ -69,7 +69,7 @@ void Graph_TFT::drawBARS(uint16_t *y_data, uint8_t n_data, uint16_t min_Y, uint1
     drawLabels(deltaX_px, deltaY_px, min_Y, max_Y, 1, n_data);
 }
 
-void Graph_TFT::drawLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, uint16_t min_Y, uint16_t max_Y) //HACER Q SEA ACUMULATIVO
+void Graph_TFT::drawLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, uint16_t min_Y, uint16_t max_Y)
 {
     drawBackground();
     drawAxis();
@@ -87,12 +87,12 @@ void Graph_TFT::drawLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, ui
     memcpy(x_data_sorted, x_data, n_data * sizeof(uint16_t));
     memcpy(y_data_sorted, y_data, n_data * sizeof(uint16_t));
 
-    bubbleSortX(x_data_sorted, y_data_sorted, n_data);
+    quickSortX(x_data_sorted, y_data_sorted, 0, n_data-1);
 
     uint16_t min_X = x_data_sorted[0];
-    uint16_t max_X = x_data_sorted[n_data-1];
+    uint16_t max_X = x_data_sorted[n_data - 1];
 
-    uint16_t xs = startX + deltaX_px/2 + 1;
+    uint16_t xs = startX + deltaX_px / 2 + 1;
     uint16_t ys = startY - deltaY_px * (y_data_sorted[0] - min_Y);
     uint16_t xe = 0, ye = 0;
 
@@ -128,8 +128,8 @@ void Graph_TFT::drawLabels(uint16_t deltaX_px, uint16_t deltaY_px, uint16_t min_
 {
     if (canva_style.x_axis)
     {
-        uint16_t x = deltaX_px/2;
-        for (uint16_t i = min_X; i <= max_X; i += (uint16_t)canva_style.axisDivX)
+        uint16_t x = deltaX_px / 2;
+        for (uint16_t i = min_X; i <= max_X; i += canva_style.axisDivX)
         {
             tft->drawNumber(i, startX + x, startY + 2);
             x += (deltaX_px + 1) * canva_style.axisDivX;
@@ -138,7 +138,7 @@ void Graph_TFT::drawLabels(uint16_t deltaX_px, uint16_t deltaY_px, uint16_t min_
 
     if (canva_style.y_axis)
     {
-        for (uint16_t i = min_Y; i <= max_Y; i += (uint16_t)canva_style.axisDivY)
+        for (uint16_t i = min_Y; i <= max_Y; i += canva_style.axisDivY)
         {
             tft->drawNumber(i, canva_style.x + 2, startY - (i - min_Y) * deltaY_px - 2);
             tft->drawPixel(startX + 1, startY - (i - min_Y) * deltaY_px, canva_style.draw1);
@@ -206,7 +206,7 @@ void Graph_TFT::drawLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, ui
     uint16_t x_data_sorted[n_data], y_data_sorted[n_data];
     memcpy(x_data_sorted, x_data, n_data * sizeof(uint16_t));
     memcpy(y_data_sorted, y_data, n_data * sizeof(uint16_t));
-    bubbleSortX(x_data_sorted, y_data_sorted, n_data);
+    quickSortX(x_data_sorted, y_data_sorted, 0, n_data - 1);
 
     uint16_t xs = startX + deltaX_px * x_data_sorted[0] + 2;
     uint16_t ys = startY - deltaY_px * y_data_sorted[0];
@@ -286,86 +286,52 @@ void Graph_TFT::setDataBARS(uint16_t *y_data, uint8_t n_data, uint16_t min_Y, ui
 {
     uint16_t max = maxminValue(y_data, n_data, true);
     uint16_t min = maxminValue(y_data, n_data, false);
-    if ((min < min_Y) && (max > max_Y))
-    {
-        drawBARS(y_data, n_data, min, max);
-    }
-    else if (min < min_Y)
-    {
-        drawBARS(y_data, n_data, min, max_Y);
-    }
-    else if (max > max_Y)
-    {
-        drawBARS(y_data, n_data, min_Y, max);
-    }
-    else
-    {
-        drawBARS(y_data, n_data, min_Y, max_Y);
-    }
+
+    min_Y = (min < min_Y) ? min : min_Y;
+    max_Y = (max > max_Y) ? max : max_Y;
+
+    drawBARS(y_data, n_data, min_Y, max_Y);
 }
 
 void Graph_TFT::setDataBARS(uint16_t *y_data, uint8_t n_data, uint16_t min_Y)
 {
     uint16_t max_Y = maxminValue(y_data, n_data, true);
     uint16_t min = maxminValue(y_data, n_data, false);
-    if (min < min_Y)
-    {
-        drawBARS(y_data, n_data, min, max_Y);
-    }
-    else
-    {
-        drawBARS(y_data, n_data, min_Y, max_Y);
-    }
+
+    min_Y = (min < min_Y) ? min : min_Y;
+
+    drawBARS(y_data, n_data, min_Y, max_Y);
 }
 
 void Graph_TFT::setDataBARS(uint16_t *y_data, uint8_t n_data)
 {
-    uint16_t max_Y = maxminValue(y_data, n_data, true);
-    uint16_t min_Y = maxminValue(y_data, n_data, false);
-    drawBARS(y_data, n_data, min_Y, max_Y);
+    drawBARS(y_data, n_data, maxminValue(y_data, n_data, false), maxminValue(y_data, n_data, true));
 }
 
 void Graph_TFT::setDataLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, uint16_t min_Y, uint16_t max_Y)
 {
     uint16_t max = maxminValue(y_data, n_data, true);
     uint16_t min = maxminValue(y_data, n_data, false);
-    if ((min < min_Y) && (max > max_Y))
-    {
-        drawLINES(x_data, y_data, n_data, min, max);
-    }
-    else if (min < min_Y)
-    {
-        drawLINES(x_data, y_data, n_data, min, max_Y);
-    }
-    else if (max > max_Y)
-    {
-        drawLINES(x_data, y_data, n_data, min_Y, max);
-    }
-    else
-    {
-        drawLINES(x_data, y_data, n_data, min_Y, max_Y);
-    }
+
+    min_Y = (min < min_Y) ? min : min_Y;
+    max_Y = (max > max_Y) ? max : max_Y;
+
+    drawLINES(x_data, y_data, n_data, min_Y, max_Y);
 }
 
 void Graph_TFT::setDataLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, uint16_t min_Y)
 {
     uint16_t max_Y = maxminValue(y_data, n_data, true);
     uint16_t min = maxminValue(y_data, n_data, false);
-    if (min < min_Y)
-    {
-        drawLINES(x_data, y_data, n_data, min, max_Y);
-    }
-    else
-    {
-        drawLINES(x_data, y_data, n_data, min_Y, max_Y);
-    }
+
+    min_Y = (min < min_Y) ? min : min_Y;
+
+    drawLINES(x_data, y_data, n_data, min_Y, max_Y);
 }
 
 void Graph_TFT::setDataLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data)
 {
-    uint16_t max_Y = maxminValue(y_data, n_data, true);
-    uint16_t min_Y = maxminValue(y_data, n_data, false);
-    drawLINES(x_data, y_data, n_data, min_Y, max_Y);
+    drawLINES(x_data, y_data, n_data, maxminValue(y_data, n_data, false), maxminValue(y_data, n_data, true));
 }
 
 void Graph_TFT::setAxisDiv(uint8_t divX, uint8_t divY)
@@ -450,26 +416,54 @@ void Graph_TFT::setStyle(GRAPH_STYLE style)
     tft->setTextColor(canva_style.draw1, canva_style.background, false);
 }
 
-void Graph_TFT::bubbleSortX(uint16_t *arrX, uint16_t *arrY, uint8_t n_data)
+void Graph_TFT::quickSortX(uint16_t *arrX, uint16_t *arrY, uint8_t left, uint8_t right)
 {
-    for (uint8_t i = 0; i < n_data; i++)
+    if (left < right)
     {
-        for (uint8_t j = i + 1; j < n_data; j++)
+        // Obtiene el índice de partición
+        uint8_t pivotIndex = partition(arrX, arrY, left, right);
+
+        // Ordena las dos subpartes de forma recursiva
+        quickSortX(arrX, arrY, left, pivotIndex - 1);
+        quickSortX(arrX, arrY, pivotIndex + 1, right);
+    }
+}
+
+uint8_t Graph_TFT::partition(uint16_t *arrX, uint16_t *arrY, uint8_t left, uint8_t right)
+{
+    uint16_t pivot = arrX[right];
+    uint8_t i = left - 1;
+
+    for (uint8_t j = left; j < right; j++)
+    {
+        if (arrX[j] < pivot)
         {
-            if (arrX[i] > arrX[j])
+            i++;
+
+            swap(&arrX[i], &arrX[j]);
+
+            if (arrY != NULL)
             {
-                uint16_t tempX = arrX[i];
-                arrX[i] = arrX[j];
-                arrX[j] = tempX;
-                if (arrY != NULL)
-                {
-                    uint16_t tempY = arrY[i];
-                    arrY[i] = arrY[j];
-                    arrY[j] = tempY;
-                }
+                swap(&arrY[i], &arrY[j]);
             }
         }
     }
+
+    swap(&arrX[i + 1], &arrX[right]);
+
+    if (arrY != NULL)
+    {
+        swap(&arrY[i + 1], &arrY[right]);
+    }
+
+    return i + 1;
+}
+
+void Graph_TFT::swap(uint16_t *a, uint16_t *b)
+{
+    uint16_t temp = *a;
+    *a = *b;
+    *b = temp;
 }
 
 uint16_t Graph_TFT::maxminValue(uint16_t *y_data, uint8_t n_data, bool max)
