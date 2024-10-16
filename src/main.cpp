@@ -28,7 +28,7 @@ void setup()
   canva.setAxisDiv(1,1);
 
   for(int i = 0; i<N; i++){
-     x[i] = i + 1;
+     x[i] = i + 3;
   }
 
   //uint8_t percentage[5] = {12,28,10,10,40};
@@ -42,6 +42,7 @@ void loop()
     y[i] = 1 + rand() % 8;
   }
 
-  canva.setDataBARS( y, N);
+  //canva.setDataBARS( y, N);
+  canva.setDataLINES(x, y, N);
   delay(1000);
 }

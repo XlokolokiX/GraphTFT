@@ -69,7 +69,7 @@ void Graph_TFT::drawBARS(uint16_t *y_data, uint8_t n_data, uint16_t min_Y, uint1
     drawLabels(deltaX_px, deltaY_px, min_Y, max_Y, 1, n_data);
 }
 
-void Graph_TFT::drawLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, uint16_t min_Y, uint16_t max_Y)
+void Graph_TFT::drawLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, uint16_t min_Y, uint16_t max_Y) //HACER Q SEA ACUMULATIVO
 {
     drawBackground();
     drawAxis();
@@ -89,10 +89,10 @@ void Graph_TFT::drawLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, ui
 
     bubbleSortX(x_data_sorted, y_data_sorted, n_data);
 
-    uint16_t min_X = x_data[0];
-    uint16_t max_X = x_data[n_data];
+    uint16_t min_X = x_data_sorted[0];
+    uint16_t max_X = x_data_sorted[n_data-1];
 
-    uint16_t xs = startX + deltaX_px * (x_data_sorted[0] - min_X) + 2;
+    uint16_t xs = startX + deltaX_px/2 + 1;
     uint16_t ys = startY - deltaY_px * (y_data_sorted[0] - min_Y);
     uint16_t xe = 0, ye = 0;
 
@@ -109,7 +109,7 @@ void Graph_TFT::drawLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, ui
 
         if (i != n_data)
         {
-            xe = startX + deltaX_px * (x_data_sorted[i] - min_X) + 2;
+            xe = xs + deltaX_px + 1;
             ye = startY - deltaY_px * (y_data_sorted[i] - min_Y);
 
             tft->drawLine(xs, ys, xe, ye, canva_style.draw2);
@@ -128,8 +128,8 @@ void Graph_TFT::drawLabels(uint16_t deltaX_px, uint16_t deltaY_px, uint16_t min_
 {
     if (canva_style.x_axis)
     {
-        uint16_t x = 0;
-        for (uint16_t i = min_X; i <= max_X; i += canva_style.axisDivX)
+        uint16_t x = deltaX_px/2;
+        for (uint16_t i = min_X; i <= max_X; i += (uint16_t)canva_style.axisDivX)
         {
             tft->drawNumber(i, startX + x, startY + 2);
             x += (deltaX_px + 1) * canva_style.axisDivX;
@@ -138,7 +138,7 @@ void Graph_TFT::drawLabels(uint16_t deltaX_px, uint16_t deltaY_px, uint16_t min_
 
     if (canva_style.y_axis)
     {
-        for (uint16_t i = min_Y; i <= max_Y; i += canva_style.axisDivY)
+        for (uint16_t i = min_Y; i <= max_Y; i += (uint16_t)canva_style.axisDivY)
         {
             tft->drawNumber(i, canva_style.x + 2, startY - (i - min_Y) * deltaY_px - 2);
             tft->drawPixel(startX + 1, startY - (i - min_Y) * deltaY_px, canva_style.draw1);
