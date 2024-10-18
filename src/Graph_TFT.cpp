@@ -48,7 +48,7 @@ void Graph_TFT::drawBARS(uint16_t *y_data, uint8_t n_data, uint16_t min_Y, uint1
     float deltaX_px = (graphW - (n_data + 1)) / n_data;
     float deltaY_px = graphH / (max_Y - min_Y);
 
-    uint8_t x = 0;
+    uint16_t x = 2 + startX;
     uint16_t barHeight = 0;
     for (uint8_t i = 0; i < n_data; i++)
     {
@@ -56,14 +56,14 @@ void Graph_TFT::drawBARS(uint16_t *y_data, uint8_t n_data, uint16_t min_Y, uint1
 
         if (canva_style.fill)
         {
-            tft->fillRect(2 + startX + x, startY - barHeight, deltaX_px, barHeight, canva_style.draw2);
+            tft->fillRect(x, startY - barHeight, deltaX_px, barHeight, canva_style.draw2);
         }
         else
         {
-            tft->drawRect(2 + startX + x, startY - barHeight, deltaX_px, barHeight, canva_style.draw2);
+            tft->drawRect(x, startY - barHeight, deltaX_px, barHeight, canva_style.draw2);
         }
 
-        x += deltaX_px + 1; // span 1 px
+        x += deltaX_px + 1; // span 1 px between bars
     }
 
     drawLabels(deltaX_px, deltaY_px, min_Y, max_Y, 1, n_data);
@@ -87,7 +87,7 @@ void Graph_TFT::drawLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, ui
     memcpy(x_data_sorted, x_data, n_data * sizeof(uint16_t));
     memcpy(y_data_sorted, y_data, n_data * sizeof(uint16_t));
 
-    quickSortX(x_data_sorted, y_data_sorted, 0, n_data-1);
+    quickSortX(x_data_sorted, y_data_sorted, 0, n_data - 1);
 
     uint16_t min_X = x_data_sorted[0];
     uint16_t max_X = x_data_sorted[n_data - 1];
@@ -126,22 +126,28 @@ void Graph_TFT::drawLINES(uint16_t *x_data, uint16_t *y_data, uint8_t n_data, ui
 
 void Graph_TFT::drawLabels(uint16_t deltaX_px, uint16_t deltaY_px, uint16_t min_Y, uint16_t max_Y, uint16_t min_X, uint16_t max_X)
 {
+    // Draw X-axis labels
     if (canva_style.x_axis)
     {
         uint16_t x = deltaX_px / 2;
+        uint16_t x_increment = (deltaX_px + 1) * canva_style.axisDivX;
+
         for (uint16_t i = min_X; i <= max_X; i += canva_style.axisDivX)
         {
             tft->drawNumber(i, startX + x, startY + 2);
-            x += (deltaX_px + 1) * canva_style.axisDivX;
+            x += x_increment;
         }
     }
 
+    // Draw Y-axis labels
     if (canva_style.y_axis)
     {
+        uint16_t y_position = 0;
         for (uint16_t i = min_Y; i <= max_Y; i += canva_style.axisDivY)
         {
-            tft->drawNumber(i, canva_style.x + 2, startY - (i - min_Y) * deltaY_px - 2);
-            tft->drawPixel(startX + 1, startY - (i - min_Y) * deltaY_px, canva_style.draw1);
+            y_position = startY - (i - min_Y) * deltaY_px;
+            tft->drawNumber(i, canva_style.x + 2, y_position - 2);
+            tft->drawPixel(startX + 1, y_position, canva_style.draw1);
         }
     }
 }
@@ -151,40 +157,52 @@ void Graph_TFT::drawPIE(uint8_t *percentage, uint8_t n_data, const char *labels[
     drawBackground();
     drawTitle();
 
+    uint8_t acc = 0;
+    for(uint8_t i = 0; i < n_data; i++)
+    {
+        acc+= percentage[i];
+    }
+    if(acc != 100){
+        return;
+    }
+    delete &acc;
+
     const uint16_t colors[5] = {0x08aa, 0x1ad5, 0xa236, 0xf334, 0xfd36};
-    const double conversion = 62.832e-3;
-    uint8_t radius, start = 0, end = 0;
+    const double conversion = 62.832e-3; // Equivalent to 2 * PI / 100 (to convert percentage to radians)
+    uint8_t radius = (graphH < graphW) ? graphH / 2 : graphW / 2;
     uint16_t sx = startX + graphW / 2;
     uint16_t sy = startY - graphH / 2;
+    uint8_t start = 0, end = 0;
     uint16_t ex, ey, lx, ly, midpoint;
-
-    if (graphH < graphW)
-    {
-        radius = graphH / 2;
-    }
-    else
-    {
-        radius = graphW / 2;
-    }
 
     for (uint8_t i = 0; i < n_data; i++)
     {
         end = start + percentage[i];
 
-        for (uint8_t p = start; p < end; p += 1)
+        for (uint8_t p = start; p < end; p++)
         {
-            ex = sx + radius * sin(p * conversion);
-            ey = sy - radius * cos(p * conversion);
+            double p_conv = p * conversion;
+            double p1_conv = (p + 1) * conversion;
 
-            tft->fillTriangle(sx, sy, sx + radius * sin((p + 1) * conversion), sy - radius * cos((p + 1) * conversion), ex, ey, colors[i % 5]);
+            ex = sx + radius * sin(p_conv);
+            ey = sy - radius * cos(p_conv);
+
+            // Draw each triangle for the pie slice
+            tft->fillTriangle(sx, sy,
+                              sx + radius * sin(p1_conv), sy - radius * cos(p1_conv),
+                              ex, ey, colors[i % 5]);
         }
 
+        // Compute midpoint for labels
         midpoint = (start + end) / 2;
+        double midpoint_conv = midpoint * conversion;
 
-        lx = sx + 1.1 * radius * sin(midpoint * conversion);
-        ly = sy - 1.1 * radius * cos(midpoint * conversion);
+        lx = sx + 1.1 * radius * sin(midpoint_conv);
+        ly = sy - 1.1 * radius * cos(midpoint_conv);
 
         tft->drawNumber(percentage[i], lx, ly);
+
+        // draw labels if provided
         if (labels != NULL)
         {
             tft->drawString(labels[i], lx - 8, ly - 8);

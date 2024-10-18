@@ -10,6 +10,7 @@ TFT_eSPI tft = TFT_eSPI();
 #define N 5
 uint16_t x[N];
 uint16_t y[N];
+uint8_t percentage[5] = {10,15,25,35,15};
 
 Graph_TFT canva = Graph_TFT(&tft, 4, 4, 124, 100, 15, 5, OCEAN);
 
@@ -28,7 +29,7 @@ void setup()
   canva.setAxisDiv(1,1);
 
   for(int i = 0; i<N; i++){
-     x[i] = i + 3;
+    x[i] = i + 3;
   }
 
   //uint8_t percentage[5] = {12,28,10,10,40};
@@ -42,7 +43,8 @@ void loop()
     y[i] = 1 + rand() % 8;
   }
 
-  //canva.setDataBARS( y, N);
-  canva.setDataLINES(x, y, N);
+  canva.setDataBARS( y, N);
+  //canva.setDataLINES(x, y, N);
+  //canva.setDataPIE(percentage, 5);
   delay(1000);
 }
